@@ -58,9 +58,6 @@ Now that we know the connection between the codebook and the data, let's gather 
 
 Time to play around with two variables of interest. Let's say we are interested in evaluating how many Latinx/os/as voted. Which variables should we look at?
 
-* dem_hisp
-* dem_hisptyp_1st
-* postvote_rvote
 
 What kind of variables are these? (Categorical, ordinal, discrete, continuous, dichotomous, etc.)
 
@@ -73,7 +70,7 @@ What kind of variables are these? (Categorical, ordinal, discrete, continuous, d
 #'read.csv("name of file.csv")' command.
 
 
-#Partner Exercise: using the command we used last week, count the number of NAs #we have (1) in the entire dataset, 
+#Using the command we used last week, count the number of NAs #we have (1) in the entire dataset, 
 #(2) in the "Hispanic type - 1st mention" variable
 
 

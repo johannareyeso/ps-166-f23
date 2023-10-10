@@ -1,4 +1,3 @@
-<<<<<<< HEAD:PS 166 Section 8.Rmd
 ---
 title: "PS 166 Section 8"
 output: html_document
@@ -8,23 +7,16 @@ date: "2023-10-12"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-
-#setup
-library(ggplot2)
-library(IRkernel)
-library(dplyr)
-
 IRkernel::installspec()
 
-#install.packages("dplyr")
 ```
 
 # Section 8
 
-Today, you will be working through this RMD with a partner and then each person
+Today, you will be working through this RMD with a partner and then each person 
 will upload their file to the group responses folder on Bcourses.
 
-## Review the following key concepts with your partner
+### Review the following key concepts with your partner
 
 * What is a data frame?
 ** What do columns and rows represent?
@@ -34,18 +26,30 @@ will upload their file to the group responses folder on Bcourses.
 * What is a command?
 
 
-Recall from last week that in order to understand what the variable names and values mean, it is vital to understand the related codebook. A codebook provides a description of each variable, including its name, label, data type, and  values. It also includes information about how the variable was measured, how missing values are coded, and any special codes or categories used in the 
+Recall from last week that in order to understand what the variable names and 
+values mean, it is vital to understand the related codebook. A codebook provides
+a description of each variable, including its name, label, data type, and  
+values. It also includes information about how the variable was measured, 
+how missing values are coded, and any special codes or categories used in the 
 variable. 
 
 * Why might researchers want to create a thorough and clear codebook?
 
-## Let's dive into the ANES codebook
+### Let's dive into the ANES codebook
 
-This dataframe contains many variables! Of these, we might not be interested in all. For today, we will focus on variables related to voting and demographic characteristics; it is a Latinx politics course after all...
+This dataframe contains many variables! Of these, we might not be interested in 
+all. For today, we will focus on variables related to voting and demographic 
+characteristics; it is a Latinx politics course after all...
 
-Open the codebook. This should already be inside your Jupyter Hub directory. Recall from our conversation last week:
+Open the codebook. This should already be inside your Jupyter Hub directory. 
+Recall from our conversation last week:
 
-Time series data involves measurements or observations of a single variable over time, while panel data involves measurements or observations of multiple variables over time for a group of individuals or entities. In this case, the data is time series because it does not follow the same people over time; it is always taken from interviews or surveys with a random, representative sample of people. 
+Time series data involves measurements or observations of a single variable over
+time, while panel data involves measurements or observations of multiple 
+variables over time for a group of individuals or entities. In this case, 
+the data is time series because it does not follow the same people over time; it
+is always taken from interviews or surveys with a random, representative sample 
+of people. 
 
 ** Why does it matter for this study?
 
@@ -55,8 +59,10 @@ Now, scroll through the codebook and extract the following important details:
 *  What is a sample?
 *  Why are the data weighted?
 
-## Understanding variables of interest
-Now that we know the connection between the codebook and the data, let's gather some information about Latinx politics. Discuss the following with a partner.
+### Understanding variables of interest
+
+Now that we know the connection between the codebook and the data, let's gather 
+some information about Latinx politics. Discuss the following with a partner.
 
 * What kind of demographic data did the survey collect?
 * What is the percentage of people who are Spanish, Hispanic or Latino?
@@ -64,32 +70,39 @@ Now that we know the connection between the codebook and the data, let's gather 
 ** Where do these categories come from?
 * What kind of political preferences and participation did the survey collect?
 
-Time to play around with two variables of interest. Let's say we are interested in evaluating how many Latinx/os/as voted. Which variables should we look at?
+Time to play around with two variables of interest. Let's say we are interested 
+in evaluating how many Latinx/os/as voted. Which variables should we look at?
 
 * dem_hisp
 * dem_hisptyp_1st
 * postvote_rvote
 
-What kind of variables are these? (Categorical, ordinal, discrete, continuous, dichotomous, etc.)
+What kind of variables are these? (Categorical, ordinal, discrete, continuous, 
+dichotomous, etc.)
+
+## Checkpoint 1
 
 ```{r}
 #df$variable of interest
 
-#Refer to the dem_hisp and postvote_rvote variables using the $ symbol. Make sure to load the data first using the 'read.csv("name of file.csv")' command.
+#Refer to the dem_hisp and postvote_rvote variables using the $ symbol. Make 
+#sure to load the data first using the 'read.csv("name of file.csv")' command.
 
-#Partner Exercise: using the command we used last week, count the number of NAs we have (1) in the entire dataset, (2) in the "Hispanic type - 1st mention" variable
+#Partner Exercise: using the command we used last week, count the number of NAs 
+#we have (1) in the entire dataset, (2) in the "Hispanic type - 1st mention" 
+#variable
 
-#Now, count for how many observations we have data in each variable. Hint: use the sum command and is.na, plus the negation sign '!'
+#Now, count for how many observations we have data in each variable. Hint: use 
+#the sum command and is.na, plus the negation sign '!'
 
-#Count the distribution of the variable values, i.e. how many of each value in the range. Use the command 'table' and refer to the specific variable. 
+#Count the distribution of the variable values, i.e. how many of each value in 
+#the range. Use the command 'table' and refer to the specific variable. 
 
 #Check the range of the two variables using the 'range' command
 
 #How do we interpret this range? Let's take a look at the codebook again.
 
 ```
-
-## Checkpoint 2
 
 Let's learn how to filter unwanted data.
 
@@ -99,16 +112,24 @@ Let's learn how to filter unwanted data.
 
 library(dplyr)
 
-#Now, let's filter out any NA values from the anes dataframe. The %>% operator in R comes from the dplyr package and allows you to pipe the output of one function into the input of another function.
+#Now, let's filter out any NA values from the anes dataframe. The %>% operator 
+#in R comes from the dplyr package and allows you to pipe the output of one 
+#function into the input of another function.
 
 anes %>%
   filter(!is.na(postvote_rvote))
 
 ```
 
-Here, we are telling R to keep only those values in the postvote_rvote column that ARE NOT missing or NAs. Note that we do not need to re-specify the data as we did before (anes$postvote_rvote) because we have already specified the dataframe through the piping operator.
+Here, we are telling R to keep only those values in the postvote_rvote column 
+that ARE NOT missing or NAs. Note that we do not need to re-specify the data as 
+we did before (anes$postvote_rvote) because we have already specified the 
+dataframe through the piping operator.
 
-If you do it this way, any row that has a missing value for the postvote_rvote variable will be deleted, including values in other columns. Therefore, if we want to retain those values, we might considering assigning the filtered dataframe to a new object, without modifying the original dataframe. How
+If you do it this way, any row that has a missing value for the postvote_rvote 
+variable will be deleted, including values in other columns. Therefore, if we 
+want to retain those values, we might considering assigning the filtered 
+dataframe to a new object, without modifying the original dataframe. How
 would you do this?
 
 ```{r}
@@ -116,18 +137,23 @@ would you do this?
 
 ```
 
+## Checkpoint 2
+
 Now, let's learn how to compute statistics. 
 
-Is there a relationship between country of origin and voting? Let's look at the correlation between the variables. How is correlation computed?
+Is there a relationship between country of origin and voting? Let's look at the 
+correlation between the variables. How is correlation computed?
 
 ```{r}
 #Use the command 'cor'
 
-#How can we interpret this? Maybe correlation is not the best way to look at the relationship between these two variables.
+#How can we interpret this? Maybe correlation is not the best way to look at the
+#relationship between these two variables.
 
 ```
 
-Now, find the mean of postvote_rvote for Mexican Americans only. First, write down how a mean is calculated. Then, use the following syntax:
+Now, find the mean of postvote_rvote for Mexican Americans only. First, write 
+down how a mean is calculated. Then, use the following syntax:
 
 mean(data$var1[data$var2 == ?], na.rm = TRUE)
 
@@ -144,7 +170,9 @@ Let's use the piping operator to find the mean of the entire voting variable.
 anes %>%
   summarize(mean(is.na(postvote_rvote), na.rm = TRUE))
 
-#Repeat for the median, standard deviation (sd), minimum and maximum value, and #percentiles. Before computing the minimum and maximum, recall that we have already learned one way to do so...
+#Repeat for the median, standard deviation (sd), minimum and maximum value, and 
+#percentiles. Before computing the minimum and maximum, recall that we have 
+#already learned one way to do so...
 
 
 #Note: for percentiles, you need to specify which (e.g. 0.25, 0.75, etc.)
@@ -156,4 +184,4 @@ anes %>%
 
 ```
 
-#Checkpoint 3
+## Checkpoint 3

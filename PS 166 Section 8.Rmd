@@ -146,7 +146,7 @@ Let's use the piping operator to find the mean of the entire voting variable.
 ```{r}
 
 anes %>%
-  summarize(mean(is.na(postvote_rvote), na.rm = TRUE))
+  summarize(mean(postvote_rvote), na.rm = TRUE)
 
 #Repeat for the median, standard deviation (sd), minimum and maximum value, and percentiles. Before computing the 
 #minimum and maximum, recall that we have already learned one way to do so...
@@ -162,3 +162,23 @@ anes %>%
 ```
 
 ## Checkpoint 3
+
+Now, let's repeat computing the same statistics, but by grouping the data by Hispanic origin. This is where the magic of piping really comes through...
+
+```{r}
+#Find the mean of the voting variable by Hispanic origin
+
+anes %>%
+  group_by(dem_hisptyp_1st) %>%
+  summarize(mean(postvote_rvote))
+
+#Repeat for the median, standard deviation (sd), minimum and maximum value, and 75th percentile.
+
+```
+```{r}
+
+#Now, let's combine (1) removing NAs, (2) summarizing by Hispanic origin group, and (3) computing the mean of the
+#highest level of education of the respondents using the piping method
+
+```
+

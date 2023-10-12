@@ -216,6 +216,8 @@ Mean: The "average" number; found by adding all data points and dividing by the 
 
 Median: The middle number; found by ordering all data points and picking out the one in the middle (or if there are two middle numbers, taking the mean of those two numbers).
 
+The 75th percentile is the value at which 25% of the answers lie above that value and 75% of the answers lie below that value.
+
 ```{r}
 
 

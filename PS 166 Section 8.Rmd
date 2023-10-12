@@ -33,12 +33,7 @@ Recall from last week that in order to understand what the variable names and va
 
 This dataframe contains many variables! Of these, we might not be interested in all. For today, we will focus on variables related to voting and demographic characteristics; it is a Latinx politics course after all...
 
-Open the codebook. This should already be inside your Jupyter Hub directory. Recall from our conversation last week:
-
-Time series data involves measurements or observations of a single variable over time, while panel data involves measurements or observations of multiple variables over time for a group of individuals or entities. In this case, the data is time series because it does not follow the same people over time; it
-is always taken from interviews or surveys with a random, representative sample of people. 
-
-** Why does it matter for this study?
+Open the codebook. This should already be inside your Jupyter Hub directory. 
 
 Now, scroll through the codebook and extract the following important details:
 
@@ -59,9 +54,15 @@ Now that we know the connection between the codebook and the data, let's gather 
 Time to play around with two variables of interest. Let's say we are interested in evaluating how many Latinx/os/as voted. Which variables should we look at?
 
 
-What kind of variables are these? (Categorical, ordinal, discrete, continuous, dichotomous, etc.)
+What kind of variables are these? (Categorical, ordinal, continuous, etc.)
 
 ## Checkpoint 1
+
+### Working with Missing Data
+
+There are at least two reasons why we may want to know whether our data has missing values (i.e. NAs). First, it’s important to have a sense of how large our sample is. Second, some functions in R, like the computation of an average, are sensitive to the inclusion of missing values (NAs). In this case, we may want to be aware of whether we have missing values to deal with them appropriately. We can either filter out missing values, or indicate in the function that missing values should be ignored. 
+
+For example, in the case of a computation of a mean of variable x you would use the following command:  `mean(x, na.rm = TRUE)`, where na.rm = TRUE, tells R to ignore the NAs and to compute the average value with the non-missing observations. Below we will practice how to filter out missing values.
 
 ```{r}
 #df$variable of interest
@@ -69,19 +70,23 @@ What kind of variables are these? (Categorical, ordinal, discrete, continuous, d
 #Refer to the dem_hisp and postvote_rvote variables using the $ symbol. Make sure to load the data first using the 
 #'read.csv("name of file.csv")' command.
 
-
 #Using the command we used last week, count the number of NAs #we have (1) in the entire dataset, 
 #(2) in the "Hispanic type - 1st mention" variable
 
 
-#Now, count for how many observations we have data in each variable. Hint: use #the sum command and is.na, plus the
-#negation sign '!'
+#Now, count for how many observations we have data in each variable. Hint: use #the 'sum' command and
+#is.na, plus the negation sign '!'
 
 
-#Count the distribution of the variable values, i.e. how many of each value in the range. Use the command 'table' 
-#and refer to the specific variable. 
+#Now, assess the distribution of the variables. That is, what is the number of observations in each 
+#of the different categories of the variables. Use the command 'table' and refer to one specific 
+#variable at a time. 
 
+```
 
+* What is the modal category (that is, the category with the largest number of observations, or the most frequent category) for the two variables?
+ 
+```{r}
 #Check the range of the two variables using the 'range' command
 
 
@@ -100,8 +105,15 @@ library(dplyr)
 #Now, let's filter out any NA values from the anes dataframe. The %>% operator #in R comes from the dplyr package 
 #and allows you to pipe the output of one function into the input of another function.
 
+#First, let's recall the distribution of the postvote_rvote variable with the command 'table'
+
+
+#Now, let's filter out missing values
 anes %>%
   filter(!is.na(postvote_rvote))
+
+#Look at the distribution of the variable again... any changes?
+
 
 ```
 
@@ -110,31 +122,59 @@ Here, we are telling R to keep only those values in the postvote_rvote column th
 If you do it this way, any row that has a missing value for the postvote_rvote variable will be deleted, including values in other columns. Therefore, if we want to retain those values, we might considering assigning the filtered dataframe to a new object, without modifying the original dataframe. How would you do this?
 
 ```{r}
+
+#Count the total observations in each variable 
+
+
 #Retry the above but assign the filtered dataframe to a new object 
 
+```
+
+```{r}
+#Example: Let's try again with a different variable 'strata_ftf'. Display it's distribution first, then filter 
+#out missing values
+
+table(anes$strata_ftf)
+sum(is.na(anes$strata_ftf))
+
+anes <- anes %>%
+  filter(!is.na(strata_ftf))
+
+table(anes$strata_ftf)
 ```
 
 ## Checkpoint 2
 
 Now, let's learn how to compute statistics. 
 
-Is there a relationship between country of origin and voting? Let's look at the correlation between the variables. How is correlation computed?
+
+Is there a relationship between gender and voting? One way to assess whether there is a relationship between gender and voting is to compare the average turnout of men to the average turnout of women. If these averages are very different to each other, then we would conclude that there is a relationship between gender and voting.
+
+Find the mean of postvote_rvote for women-identifying respondents only. First, write down how a mean is calculated. 
+
+First, find the mean of postvote_rvote for the entire sample. Use:
+
+mean(data$var1, na.rm = TRUE)
 
 ```{r}
-#Use the command 'cor'
-
-#How can we interpret this? Maybe correlation is not the best way to look at the #relationship between these two 
-#variables.
 
 ```
 
-Now, find the mean of postvote_rvote for Mexican Americans only. First, write down how a mean is calculated. Then, use the following syntax:
+Then, use the following syntax to find the mean for women-identifying individuals only:
 
 mean(data$var1[data$var2 == ?], na.rm = TRUE)
 
+
 ```{r}
 
 ```
+
+Find the mean of postvote_rvote for men-identifying respondents only.
+
+```{r}
+
+```
+
 What does na.rm do in this case? Is it applicable here? Why/why not?
 
 
@@ -153,7 +193,7 @@ anes %>%
 
 
 
-#You can also use piping it to count missing values!
+#You can also use piping it to count missing values! Try below.
 
 
 ```
@@ -168,14 +208,22 @@ Now, let's repeat computing the same statistics, but by grouping the data by His
 anes %>%
   group_by(dem_hisptyp_1st) %>%
   summarize(mean(postvote_rvote))
-
-#Repeat for the median, standard deviation (sd), minimum and maximum value, and 75th percentile.
-
 ```
+
+Repeat for the median, standard deviation (sd), minimum and maximum value, and 75th percentile.
+
+Mean: The "average" number; found by adding all data points and dividing by the number of data points.
+
+Median: The middle number; found by ordering all data points and picking out the one in the middle (or if there are two middle numbers, taking the mean of those two numbers).
+
 ```{r}
 
-#Now, let's combine (1) removing NAs, (2) summarizing by Hispanic origin group, and (3) computing the mean of the
-#highest level of education of the respondents using the piping method
+
+```
+Now, let's combine (1) removing NAs, (2) summarizing by Hispanic origin group, and (3) computing the mean of the highest level of education of the respondents using the piping method. Assign the result to a new object.
+
+```{r}
+
 
 ```
 

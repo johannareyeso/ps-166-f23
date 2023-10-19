@@ -105,6 +105,19 @@ ggplot(data = anes, aes(x = trustgov_trustgrev)) +
 ggplot(data = anes, aes(x = trustgov_trustgrev)) +
   geom_bar()
 
+
+# One way to make our lives easier when using the same data and x/y axes, is to just assign the first layer to an object and add layers from there
+
+p <- ggplot(data = anes, aes(x = trustgov_trustgrev))
+
+#Now, we add the layers as above
+
+p + geom_density()
+
+p + geom_histogram()
+
+p + geom_bar()
+
 ```
 Repeat for 'dem_hisptyp_1st'
 

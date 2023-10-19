@@ -40,12 +40,12 @@ Ggplot is a really powerful tool because it allows us to build plots by layers o
 
 Remember: many issues arise simply from careless mistakes. Here are three things to watch for:
 
-$
-\begin{enumerate}
-\item Make sure parentheses are balanced ()
-\item In ggplot, we will be adding layers by adding expressions with + sign, make sure the + is always at the end of the line and not the beginning
-\end{enumerate}
-$
+
+\\begin{enumerate}
+\\item Make sure parentheses are balanced ()
+\\item In ggplot, we will be adding layers by adding expressions with + sign, make sure the + is always at the end of the line and not the beginning
+\\end{enumerate}
+
 
 Let's look at a different way to visualize our postvote_rvote distribution. 
 

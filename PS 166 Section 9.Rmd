@@ -1,0 +1,224 @@
+---
+title: "PS 166 Section 9"
+author: "Johanna Reyes O."
+date: "2023-10-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Earlier today, we used table() to look at the distribution of a variable. That is, what is the number of observations in each of the different categories of the variable. Let's look at the distribution of postvote_rvote. What does this variable represent, again?
+
+```{r}
+
+
+# What kind of variable is this? If you are unsure from the codebook, you can use 'class()' to ask R. 
+
+```
+
+We can also visualize distributions via plotting...
+
+# Plotting with 'ggplot' (a very, very powerful tool!)
+
+## Setting up 
+
+Ggplot is a package or a library of functions that are not programmed into base R. Run the code below to load the packages into R. That way, we can use all the functions included in each.
+
+```{r}
+
+
+#load the packages
+library(ggplot2)
+library(IRkernel)
+library(dplyr)
+```
+
+Ggplot is a really powerful tool because it allows us to build plots by layers or piece by piece. This can be a frustrating process, so it's important to be patient with ourselves (as R cannot read out minds!). 
+
+Remember: many issues arise simply from careless mistakes. Here are three things to watch for:
+
+\begin{enumerate}
+\item Make sure parentheses are balanced ()
+\item In ggplot, we will be adding layers by adding expressions with + sign, make sure the + is always at the end of the line and not the beginning
+\end{enumerate}
+
+Let's look at a different way to visualize our postvote_rvote distribution. 
+
+## Bring in the data
+```{r}
+#load the 'anes' data and assign it to an object
+
+
+```
+
+Let's create a histogram of the postvote_rvote variable. In ggplot, all plots begin with a similar syntax:
+
+ggplot(data = your data object, aes(x = your x variable, y = your y variable) + 
+  geom_histogram()
+
+*STOP and check your knowledge: in a graph, where would the x and y variables go?*
+
+The first layer specifies which data we will be using and which variables we want to plot. The second later specifies which kind of plot we want, in this case we want a histogram.
+
+```{r}
+ggplot(data = anes, aes(x= postvote_rvote)) +
+  geom_histogram()
+
+#Note that we do not need to refer to the voting variable with "anes$postvote_rvote" because we have already told ggplot in which dataframe to look for the x-variable
+
+# Now create a histogram for the gender variable and the age variable
+
+
+#How can we better visualize the gender and age histograms? We can add a layer indicating the number of bins
+
+
+
+```
+We can also graph different types of plots, like a scatterplot, barplot, or density plot. Usually, we use bar plots to show comparisons across discrete categories and histograms to show distributions of continuous data. 
+
+* Density plots, too, usually are used to visualize the distribution of a continuous variable. The area under the curve represents the proportion of data points within that region.
+
+* Scatterplots are used to visualize the relationship between two variables.
+
+
+Let's now work the 'trustgov_trustgrev' and 'dem_age_r_x' variables. 
+
+* What kind of variables are these?
+* What does the 'trustgov_trustgrev' measure? 
+
+```{r}
+# Let's start with a 'trustgov_trustgrev'
+
+#Remember: all ggplots start with the same baseline: ggplot(df, aes(x = , y = )), and you add components from there, using the + sign
+
+#Barplot, histogram, and density plots for trustgov_trustgrev
+
+ggplot(data = anes, aes(x = trustgov_trustgrev)) +
+  geom_density()
+
+ggplot(data = anes, aes(x = trustgov_trustgrev)) +
+  geom_histogram()
+
+ggplot(data = anes, aes(x = trustgov_trustgrev)) +
+  geom_bar()
+
+```
+Repeat for 'dem_hisptyp_1st'
+
+```{r}
+# barplot
+
+# histogram
+
+# density plot
+```
+Conceptually we are always doing the same tasks:
+
+\begin{enumerate}
+\item Tell ggplot() function what our data is
+\item Tell ggplot() what relationships we want to see.
+\item Tell ggplot() how we want to see the relationships in our data by layering different geoms (types of plots)
+\item Use additional functions to adjust scales, labels, tickmarks, titles, and other aesthetics (we will learn about these next time)
+\end{enumerate}
+
+
+Now let's try to look at the relationship between both 'dem_hisptyp_1st' and 'trustgov_trustgrev'
+```{r}
+#Check for how many observations we have data for both variables
+
+# Let's plot a scatterplot
+
+ggplot(data = anes, aes(x = dem_hisptyp_1st, y = trustgov_trustgrev)) +
+  geom_point()
+
+```
+Perhaps a scatterplot is not the best way to visualize how the trust variable might vary across different people... a better way might be to simply plot the mean trust across different groups. 
+
+Recall for this morning how we found the mean by group
+
+```{r}
+anes %>%
+  group_by(dem_hisptyp_1st) %>%
+  summarize(mean(postvote_rvote))
+
+# We can use the same logic to then plot the summarized data
+
+anes %>%
+  group_by(dem_hisptyp_1st) %>%
+  summarize(mean_vote = mean(postvote_rvote)) %>%
+  ggplot(aes(x = dem_hisptyp_1st, y = mean_vote)) +
+  geom_bar(stat= "identity")
+
+```
+
+
+
+Stephanie: We probably won't get this far... but the ANES latino subset used 999 for not applicable.. and so it does not make sense to filter out NAs, but to filter out the values that are not relevant..How do you recommend I edit the below?
+
+```{r}
+#subset variables so we only look at the continuous measures (1-7 for 'dem_hisptyp_1st' and 1-5 for 'trustgov_trustgrev')
+
+#Two options
+
+anes %>%
+  filter(between(dem_hisptyp_1st, 1, 3), between(trustgov_trustgrev, 1, 5))
+
+anes %>%
+  filter(dem_hisptyp_1st in %>% c(1,2), trustgov_trustgrev in %>% c(1:5))
+
+
+#check for how many observations we have data for both variables
+
+#plot bar plot, subsetting the data first, using the following syntax
+
+anes %>%
+  filter(between(dem_hisptyp_1st, 1, 3), between(trustgov_trustgrev, 1, 5)) %>%
+  ggplot(dt, aes(x = dem_hisptyp_1st, y = trustgov_trustgrev)) +
+  geom_bar(stat = "identity") #this selects the type of plot. 'identity' 
+  geom_col() #alternative, does not perform any calculation with the data
+
+
+#what do we need to fix here?
+
+#plot by mean per group
+
+#1. Mexican
+#2. Mexican-American 
+#3. Chicano
+#4. Puerto Rican 
+#5. Cuban 
+#6. Cuban-American
+#7. Other
+
+anes %>%
+  filter(between(dem_hisptyp_1st, 1, 7), between(y, 1, 5)) %>%
+  group_by(dem_hisptyp_1st) %>% 
+  summarize(mean_y = mean(trustgov_trustgrev, na.rm = TRUE)) %>%
+  
+  ggplot(aes(x = reorder(dem_hisptyp_1st, (mean_y)), y = trustgov_trustgrev, fill = y)) +
+  geom_bar(stat = "identity") 
+```
+
+* How would you interpret this plot? 
+
+```{r}
+#Redo but now let's compare trust levels only for Puerto Ricans and Cubas. Plot a density plot, make sure to give them each a different color to differentiate. 
+
+anes %>%
+  #filter dem_hisptyp_1st %>%
+  
+  ggplot(aes(x = , fill = factor(hisp type))) +
+  geom_density(alpha = 0.5) + #you can select diffent levels of color transparency
+  scale_fill_manual(values = c("blue", "lightblue")) + #pick your own colors, try a Hex scale
+  xlab("X label") +
+  ylab("Density") +
+  ggtitle("Title") +
+  labs(fill = "Legend Name") +
+  theme_classic() #pick your favorite
+
+```
+
+* How would you interpret this other plot? What if we were to compare other groups; what would you expect?

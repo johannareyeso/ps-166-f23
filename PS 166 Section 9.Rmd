@@ -178,6 +178,8 @@ anes %>%
   geom_bar(stat = "identity") #this selects the type of plot. 'identity' 
   geom_col() #alternative, does not perform any calculation with the data
 
+  
+#The difference between geom_col and geom_bar() is that geom_bar() expects the data to be pre-summarized into counts for each group, whereas geom_col() can work with raw data
 
 #what do we need to fix here?
 

@@ -38,13 +38,11 @@ library(dplyr)
 
 Ggplot is a really powerful tool because it allows us to build plots by layers or piece by piece. This can be a frustrating process, so it's important to be patient with ourselves (as R cannot read out minds!). 
 
-Remember: many issues arise simply from careless mistakes. Here are three things to watch for:
+Remember: many issues arise simply from careless mistakes. Here are two things to watch for:
 
 
-\\begin{enumerate}
-\\item Make sure parentheses are balanced ()
-\\item In ggplot, we will be adding layers by adding expressions with + sign, make sure the + is always at the end of the line and not the beginning
-\\end{enumerate}
+1. Make sure parentheses are balanced ()
+2. In ggplot, we will be adding layers by adding expressions with + sign, make sure the + is always at the end of the line and not the beginning
 
 
 Let's look at a different way to visualize our postvote_rvote distribution. 
@@ -119,12 +117,10 @@ Repeat for 'dem_hisptyp_1st'
 ```
 Conceptually we are always doing the same tasks:
 
-\begin{enumerate}
-\item Tell ggplot() function what our data is
-\item Tell ggplot() what relationships we want to see.
-\item Tell ggplot() how we want to see the relationships in our data by layering different geoms (types of plots)
-\item Use additional functions to adjust scales, labels, tickmarks, titles, and other aesthetics (we will learn about these next time)
-\end{enumerate}
+1. Tell ggplot() function what our data is
+2. Tell ggplot() what relationships we want to see.
+3. Tell ggplot() how we want to see the relationships in our data by layering different geoms (types of plots)
+4. Use additional functions to adjust scales, labels, tickmarks, titles, and other aesthetics (we will learn about these next time)
 
 
 Now let's try to look at the relationship between both 'dem_hisptyp_1st' and 'trustgov_trustgrev'

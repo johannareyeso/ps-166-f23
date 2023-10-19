@@ -7,12 +7,14 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
 
 Earlier today, we used table() to look at the distribution of a variable. That is, what is the number of observations in each of the different categories of the variable. Let's look at the distribution of postvote_rvote. What does this variable represent, again?
 
 ```{r}
+# Let's load the data. Note that I have saved the data as an .RDS file, so we need to use a different command 'readRDS()'. We might need to load library(readr)...
 
 
 # What kind of variable is this? If you are unsure from the codebook, you can use 'class()' to ask R. 

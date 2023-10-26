@@ -1,0 +1,198 @@
+---
+title: "PS 166 Section 10"
+author: "Johanna Reyes O."
+date: "2023-10-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+Last week, we used table() to look at the distribution of a variable. That is, what is the number of observations in each of the different categories of the variable. Let's look at the distribution of postvote_rvote. What does this variable represent, again?
+
+```{r}
+# Let's load the data. Note that I have saved the data as an .RDS file, so we need to use a different command 'readRDS()'. We might need to load library(readr)...
+
+
+# What kind of variable is this? If you are unsure from the codebook, you can use 'class()' to ask R. 
+
+```
+
+We can also visualize distributions via plotting...
+
+# Plotting with 'ggplot' (a very, very powerful tool!)
+
+## Setting up 
+
+Ggplot is a package or a library of functions that are not programmed into base R. Run the code below to load the packages into R. That way, we can use all the functions included in each.
+
+```{r}
+
+
+#load the packages
+library(ggplot2)
+library(IRkernel)
+library(dplyr)
+```
+
+Ggplot is a really powerful tool because it allows us to build plots by layers or piece by piece. This can be a frustrating process, so it's important to be patient with ourselves (as R cannot read out minds!). 
+
+Remember: many issues arise simply from careless mistakes. Here are two things to watch for:
+
+
+1. Make sure parentheses are balanced ()
+2. In ggplot, we will be adding layers by adding expressions with + sign, make sure the + is always at the end of the line and not the beginning
+
+
+Let's look at a different way to visualize our postvote_rvote distribution. 
+
+## Bring in the data
+```{r}
+#load the 'anes' data and assign it to an object. Note that we are working with an .rds file now, so we need to use the 'readRDS()' command. Double check the name of the file in your directory.
+
+
+```
+
+Let's create a histogram of the postvote_rvote variable. In ggplot, all plots begin with a similar syntax:
+
+ggplot(data = your data object, aes(x = your x variable, y = your y variable) + 
+  geom_histogram()
+
+*STOP and check your knowledge: in a graph, where would the x and y variables go?*
+
+The first layer specifies which data we will be using and which variables we want to plot. The second later specifies which kind of plot we want, in this case we want a histogram.
+
+```{r}
+ggplot(data = anes, aes(x= postvote_rvote)) +
+  geom_histogram()
+
+#Note that we do not need to refer to the voting variable with "anes$postvote_rvote" because we have already told ggplot in which dataframe to look for the x-variable
+
+# Now create a histogram for the gender variable and the age variable
+
+
+#How can we better visualize the gender and age histograms? We can add a layer indicating the number of bins
+
+
+
+```
+We can also graph different types of plots, like a scatterplot, barplot, or density plot. Usually, we use bar plots to show comparisons across discrete categories and histograms to show distributions of continuous data. 
+
+* Density plots, too, usually are used to visualize the distribution of a continuous variable. The area under the curve represents the proportion of data points within that region.
+
+* Scatterplots are used to visualize the relationship between two variables.
+
+
+Let's now work with the 'trustgov_trustgrev' and 'dem_age_r_x' variables. 
+
+* What kind of variables are these?
+* What does the 'trustgov_trustgrev' measure? 
+
+```{r}
+# Let's start with a 'trustgov_trustgrev'
+
+#Remember: all ggplots start with the same baseline: ggplot(df, aes(x = , y = )), and you add components from there, using the + sign
+
+#Barplot, histogram, and density plots for trustgov_trustgrev
+
+ggplot(data = anes, aes(x = trustgov_trustgrev)) +
+  geom_density()
+
+ggplot(data = anes, aes(x = trustgov_trustgrev)) +
+  geom_histogram()
+
+ggplot(data = anes, aes(x = trustgov_trustgrev)) +
+  geom_bar()
+
+
+# One way to make our lives easier when using the same data and x/y axes, is to just assign the first layer to an object and add layers from there
+
+p <- ggplot(data = anes, aes(x = trustgov_trustgrev))
+
+#Now, we add the layers as above
+
+p + geom_density()
+
+p + geom_histogram()
+
+p + geom_bar()
+
+```
+Repeat for 'dem_hisptyp_1st'
+
+```{r}
+# barplot
+
+# histogram
+
+# density plot
+```
+Conceptually we are always doing the same tasks:
+
+1. Tell ggplot() function what our data is
+2. Tell ggplot() what relationships we want to see.
+3. Tell ggplot() how we want to see the relationships in our data by layering different geoms (types of plots)
+4. Use additional functions to adjust scales, labels, tickmarks, titles, and other aesthetics (we will learn about these next time)
+
+
+Now let's try to look at the relationship between both 'dem_hisptyp_1st' and 'trustgov_trustgrev'
+```{r}
+#Check for how many observations we have data for both variables
+
+# Let's plot a scatterplot
+
+ggplot(data = anes, aes(x = dem_hisptyp_1st, y = trustgov_trustgrev)) +
+  geom_point()
+
+```
+Perhaps a scatterplot is not the best way to visualize how the trust variable might vary across different people... a better way might be to simply plot the mean trust across different groups. 
+
+Recall from last week how we found the mean by group:
+
+```{r}
+anes %>%
+  group_by(dem_hisptyp_1st) %>%
+  summarize(mean(postvote_rvote))
+
+# We can use the same logic to then plot the summarized data
+
+anes %>%
+  group_by(dem_hisptyp_1st) %>%
+  summarize(mean_vote = mean(postvote_rvote)) %>%
+  ggplot(aes(x = dem_hisptyp_1st, y = mean_vote)) +
+  geom_bar(stat= "identity")
+
+#The difference between geom_col and geom_bar() is that geom_bar() expects the data to be pre-summarized into counts for each group, whereas geom_col() can work with raw data
+
+```
+
+Now repeat for trustgov_trustgrev, grouped by gender. Make sure to remove NAs if necessary.
+
+```{r}
+
+
+
+```
+
+Redo but now let's compare trust levels by country of origin using a density plot. Plot a density plot, make sure to give them each a different color to differentiate. Let's also add colors and labels.
+```{r}
+#Fill in what is missing below
+
+ %>%
+   %>%
+   %>%
+  ggplot(aes(x = , fill = factor(hisp type))) +
+  geom_density(alpha = 0.5) + #you can select diffent levels of color transparency
+  scale_fill_manual(values = c("blue", "lightblue")) + #pick your own colors, try a Hex scale
+  xlab("X label") +
+  ylab("Density") +
+  ggtitle("Title") +
+  labs(fill = "Legend Name") +
+  theme_classic() #pick your favorite 
+
+```
+
+* How would you interpret this other plot? 

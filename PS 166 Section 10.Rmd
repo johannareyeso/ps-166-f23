@@ -1,15 +1,4 @@
----
-title: "PS 166 Section 10"
-author: "Johanna Reyes O."
-date: "2023-10-26"
-output: pdf_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-```
-
+# PS 166 Section 10
 
 Last week, we used table() to look at the distribution of a variable. That is, what is the number of observations in each of the different categories of the variable. Let's look at the distribution of postvote_rvote. What does this variable represent, again?
 
@@ -23,9 +12,9 @@ Last week, we used table() to look at the distribution of a variable. That is, w
 
 We can also visualize distributions via plotting...
 
-# Plotting with 'ggplot' (a very, very powerful tool!)
+## Plotting with 'ggplot' (a very, very powerful tool!)
 
-## Setting up 
+### Setting up 
 
 Ggplot is a package or a library of functions that are not programmed into base R. Run the code below to load the packages into R. That way, we can use all the functions included in each.
 
@@ -49,12 +38,15 @@ Remember: many issues arise simply from careless mistakes. Here are two things t
 
 Let's look at a different way to visualize our postvote_rvote distribution. 
 
-## Bring in the data
+### Bring in the data
 ```{r}
 #load the 'anes' data and assign it to an object. Note that we are working with an .rds file now, so we need to use the 'readRDS()' command. Double check the name of the file in your directory.
 
 
 ```
+
+
+### Plotting 
 
 Let's create a histogram of the postvote_rvote variable. In ggplot, all plots begin with a similar syntax:
 

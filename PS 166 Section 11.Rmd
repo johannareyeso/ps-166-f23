@@ -1,0 +1,168 @@
+---
+title: "PS166_Section11"
+author: "Johanna Reyes O."
+date: "2023-11-09"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse) #this one includes both dplyr and ggplot2!!!
+```
+
+## Basics recap, using the "anes_latino" data 
+
+Today, we will be using the following variables:
+* The prevote_voted variable notes whether a responded voted in the last General Election. 
+* The trustgov_trustgrev variable stands for trust in government.
+* The gender_respondent_x is a binary measure of gender.
+* The dem_hisptyp_1st variable is the first mention of country of origin.
+* The dem_racecps_white refers to whether respondents consider their race to be white.
+
+### 1. How do we count total number of observations (i.e. the total number of respondents) within a dataframe?
+
+```{r}
+#read data- I am using the RDS fie below
+anes <- readRDS("anes.rds")
+
+#total observations (we know two ways!)
+```
+
+### 2. How do we know for how many respondents we have missing information about one variable? (check first prevote_voted, then trustgov_trustgrev) 
+
+```{r}
+#NAs for voting
+
+#NAs for trust
+
+```
+### 3. How do we know for how many respondents we have information about one variable? (check first prevote_voted, then trustgov_trustgrev) 
+
+```{r}
+#info for voting
+
+
+#info for trust 
+
+# Alternative: count number of total observations and subtract missing ones 
+```
+### 4. How do we know for how many respondents we have information for two variables? (check for dem_hisptype_1st AND prevote_voted)
+
+```{r}
+sum(!is.na(anes$var1) & !is.na(anes$var2)) #substitute var1 and var2 with correct variable names
+
+```
+### 4. Compute a bar plot with the MEDIAN value of trust in government (in the y-axis) by gender (in the x-axis). Order the bars from the group with the highest to the lowest trust in government.
+
+* Remember: when computing statistics, for example, a mean or median, we need to include "na.rm=TRUE" to exclude missing cases. Otherwise, we will get NA as the value of the mean.
+
+Let's recall how to use ggplot:
+
+```{r}
+# A basic barplot of trust only takes the x variable, but we want the MEDIAN trust BY Group (Gender)
+
+# Basic plot 
+
+ggplot(data = anes, aes(x = trustgov_trustgrev)) + #first later specifying data and variables
+  geom_bar() #second layer specifying plot type
+
+# What is the first thing we need to clean based on the plot?
+  
+```
+Let's now plot trust levels by group
+```{r}
+# First, clean and group the data
+
+anes %>% # this tell's R to use the data 
+  filter(!is.na(trustgov_trustgrev)) %>% # keep only what is NOT missing in trustgov_trustgrev variable
+  group_by(gender_respondent_x) %>% # we want average TRUST by GENDER, so group by gender first
+  summarize(med_trust = median(trustgov_trustgrev, na.rm = TRUE)) %>%  # Summarize by the median. We create a new variable so we can use that as the y axis
+ggplot(aes(y = med_trust , x=  gender_respondent_x)) + # specify variables
+    geom_col() #specify type of plot
+
+```
+Now, repeat but plot the mean trust levels by Hispanic origin type. Add code to the LEFT of each comment. Remember that we use piping %>% to manipulate the data and then we add ggplot and its layers  
+
+```{r}
+ # this tell's R to use the data 
+ # keep only what is NOT missing in trustgov_trustgrev variable
+ # we want average TRUST by GENDER, so group by gender first
+ # Summarize by the median
+ # specify variables
+ #specify type of plot
+```
+
+
+```{r}
+
+#Now, together reorder by decreasing mean trust levels, add fill color, and labels for axes and each bar using "+ geom_text(aes(label = round(mean_trust, 2)))"
+
+  
+```
+
+### 5. 
+
+* What is the average value of trust in government for Puerto Ricans?
+* What is the average value of trust in government for Chicanx? 
+
+```{r}
+
+## 6. Let's now make a density plot for trust levels by gender
+
+# basic density plot 
+
+anes %>%
+  filter(!is.na(trustgov_trustgrev)) %>% 
+  ggplot(aes(x = trustgov_trustgrev))+
+  geom_density()
+
+# now separate by gender- note we do not need to group by because we are not calculating any statistics- we can just color differently
+
+anes %>%
+  filter(!is.na(trustgov_trustgrev)) %>%
+  ggplot(aes(x = trustgov_trustgrev, fill = factor(gender_respondent_x))) + #we use fill to add a fill color by gender
+  geom_density(alpha = 0.5) + # alpha specifies a transparency level
+  labs(fill = "Gender( 1= Male, 2=Female)", x= "Mean Trust Levels") #labs allows to specify multiple labels
+
+```
+
+### 6. Let's compute a scatter plot displaying the correlation between levels of trust (in the x-axis) whether the respondent voted in the General Election. Let's include a linear regression summarizing the correlation.
+```{r}
+anes %>%
+   filter(!is.na(trustgov_trustgrev)) %>%
+  ggplot(aes(x = trustgov_trustgrev, y = prevote_voted))+
+  geom_point()+
+ geom_smooth(method=lm) 
+
+#How can we look at the actual regression estimation?
+
+#summary(lm(y~x, data = data))
+```
+### 7. Now, let's repeat but identifying with a different color Hispanics by gender.
+
+```{r}
+anes %>%
+   filter(!is.na(trustgov_trustgrev)) %>%
+  ggplot(aes(x = trustgov_trustgrev, y = prevote_voted, color = factor(gender_respondent_x))) + #note how we use 'color' and not 'fill' because it is a line (but the idea is the same as above!)
+  geom_point()+
+ geom_smooth(method=lm)
+
+#Add labels to the plot
+
+#Discuss with the person next to you how you would interpret the plot
+ 
+
+```
+
+Repeat but now color by their first mention of race is white 'dem_racecps_white'
+
+```{r}
+#first use table() to see who the variable values are distributed
+
+#plot a scatterplot, add a regression line, and appropriate labels 
+```
+
+

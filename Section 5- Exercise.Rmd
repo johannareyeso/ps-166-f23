@@ -1,0 +1,368 @@
+---
+title: "PS 231B Section 5- Exercise"
+author: "Your Name"
+date: "February 14, 2024 <3"
+output:
+  pdf_document
+---
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#set chunk options
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# load libraries using pacman
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(png, grid, ggplot2, tidyverse, MASS, knitr, Matching, stargazer, optmatch, RItools)
+```
+
+# Review of concepts
+
+In pairs, define the following and discuss (1) when/how is it useful? and (2) an example of a possible application:
+
+- Common support 
+- Propensity scores
+    + In relation to curse of dimensionality?
+    + In relation to inverse probability weighting?
+
+- Issues faced when using linear regression to  estimate treatment effects
+
+# Balance tests: Recap
+
+Let's first refresh our memories by checking balance after we matched with the Euclidean distance last week...
+
+Recall the following: 
+
+Arrington et al. (2021) evaluate whether the processes states use to select judges for high courts influence gender diversity. They use a global sample sine 1970 and a matching design in two stages (exact matching and propensity score matching) to compare treated and control units with the same pretreatment institutions. Treatment is a change in the number of appointers or nominators.
+
+[Here is the paper.](https://www-cambridge-org.libproxy.berkeley.edu/core/journals/american-political-science-review/article/constitutional-reform-and-the-gender-diversification-of-peak-courts/D9B56B946416D4582B34D769B3F937F5#supplementary-materials) We will be using only  `women_highcourts.csv`. 
+
+(If curious, you can find the authors' code and original data files [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/RHPSZD)). 
+
+```{r}
+
+# Load the data
+
+```
+
+Let's match by Euclidean distance first on the same variables as last time, and check balance for them...Hint: simply copy-paste your code from last week. 
+
+We are interested in the effect of 
+`"treated1"`: or treatment as an increase in the number of nominators/selectors on `"has_there_ever_been_wom"`: which indicates time until the year of appointment of the first woman to a state’s highest court (ie. 0 in the years prior to appointment and 1 once the first woman is appointed). In the first stage, the authors only match on:
+
+>- `year`
+>- `nominators_to_match1` 
+>- `selectors_to_match1`
+
+# Matching as before
+
+```{r}
+# missing values in outcome, and Match does not like that...so subset data to only include needed columns and omit NAs in the outcome variable
+
+
+# define X
+
+# define Y
+
+# define treatment 
+
+# perform matching 
+
+# let's now check balance before and after matching
+
+```
+
+# Now, with propensity score
+
+What are the necessary steps? 
+
+
+
+For the propensity score weighting, the authors actually take the matched dataset from step 1 and then match again using a different set of variables.
+
+Comment the code below:
+```{r}
+#First, we need to extract the matched data from the above
+
+#summary.Match(euclidean_matches)
+
+matched <- euclidean_matches$mdata
+
+index.treated <- euclidean_matches$index.treated
+index.control <- euclidean_matches$index.control
+
+# # Create match_id based on order of indexes  
+match_id <- c(1:length(index.treated), 1:length(index.control))
+
+# Create match id for full data- not just matched observations
+
+full_match_id <- rep(0, nrow(X))
+
+# Assign match ids for those that were matched
+full_match_id[order(c(index.treated, index.control))] <- match_id
+
+# Bind back to FULL original data  
+new_data <- as.data.frame(cbind(Y, X, Tr,  
+                  MatchID = full_match_id))
+
+# merge with all other covariates
+
+## to ensure merging works- we need to make sure the original df has the same dimensions and column names
+
+names(new_data)[c(1, 5)] <- c("has_there_ever_been_wom", "treated1")
+
+new_data_cols <- names(new_data)[1:5]
+
+# Merge with all covariates
+highcourts2 <- merge(new_data, highcourts1, by = new_data_cols)
+
+# delete duplicates
+highcourts2 <- highcourts2 %>% 
+  distinct(record_id, .keep_all = TRUE)
+
+#write.csv(highcourts2, "highcourts2.csv", row.names = F) # 
+
+```
+
+# Reproducing Propensity Score Matching from Arrington et al. 2021
+
+**Comment the authors' code below WITHOUT ACTUALLY RUNNING IT!** 
+
+```{r, warning=FALSE, echo=FALSE}
+# #install.packages("optmatch")
+# #install.packages("RItools")
+# # library(optmatch)
+# # library(RItools)
+# 
+# #propensity score matching with optmatch
+# psm<-glm(treated1~ percent_women_filled 
+#          +since_UNIVSFFRG   
+#          +v2jupack_filled
+#          +v2x_partipdem_filled
+#          +v2x_egaldem_filled
+#          + v2xcl_rol_filled
+#          +v2x_gender_filled
+#          +v2csgender_filled
+#          +v2mefemjrn_filled
+#          +v2cldmovew_filled
+#          +v2cldiscw_filled
+#          +v2clslavef_filled
+#          +v2clprptyw_filled
+#          +v2clacjstw_filled
+#          +v2pepwrgen_filled
+#          +strata(subclass), family="binomial", data=cem.data2017_tr1)
+# 
+# ps.pm <- pairmatch(psm, data = cem.data2017_tr1)
+# 
+# summary(ps.pm)
+# 
+# 
+# #pulling matches indicator from optmatch into the dataframe
+# all.equal(names(ps.pm), row.names(cem.data2017_tr1)) #TRUE
+# matched_pairs_tr1<-cbind(cem.data2017_tr1, matches=ps.pm)
+
+```
+
+# An aside: Why GML? 
+
+A Generalized linear model (GLM) is a generalization of ordinary linear regression that allows for response variables that have an error distribution other than a normal distribution... hence, more "general"...
+
+GLMs also have a non-linear 'link functions', which links the regression coefficients to the distribution and allows the linear model to generalize.
+
+Useful resources:
+>- [Datacamp Module](https://www.datacamp.com/tutorial/generalized-linear-models) and [Interactive Course](https://app.datacamp.com/learn/courses/generalized-linear-models-in-r)
+>- [`gml` R documentation](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/glm)
+  >- Including foundational references
+  
+>- More in 231C!
+
+# Back to matching...
+
+Now, modify the authors' code so that we use our new_data df and the matchID as a covariate instead of their strata variable....
+
+```{r}
+#propensity score matching with optmatch
+
+
+```
+Now, let's practice plotting our propensity scores... fill in the "blanks":
+
+```{r}
+
+# get the propensity scores from the model
+## note, we add the original df to be able to merge - this is code from lecture
+
+#define treatment for plotting - to create a new df with pscores and the treatment
+
+# Plot pscores, color by treatment group
+
+# now, let's match like the authors do
+ps.pm <- pairmatch(psm, data = highcourts2)
+summary(ps.pm) # comment on the results
+
+#pulling matches indicator from optmatch into the dataframe
+all.equal(names(ps.pm), row.names(highcourts2)) #TRUE
+matched_pairs_tr1<-cbind(highcourts2, matches=ps.pm)
+
+# Refit glm on matched data using the same model as above - just so we can plot with the matched data- the pscores should not change
+
+# Predict propensity scores
+
+#Keeping version with all data for generating balance plot later
+matched_pairs_tr1_full<-matched_pairs_tr1
+
+# plot again- but only using the matches!!! 
+
+# How effective were the new matches?
+```
+
+# Balance Plots
+
+Now, let's check balance again to see if our matching strategy worked
+
+```{r}
+####Balance#### from the authors' code
+# Comment as you run!
+
+
+#make matched pairs numeric
+matched_pairs_tr1_full$matched<-as.numeric(matched_pairs_tr1_full$matches)
+matched_pairs_tr1_full$matched[is.na(matched_pairs_tr1_full$matched)] <- 0
+
+
+#need a vector of the variables that we need
+var_names<-   c("year",
+                "nominators_to_match1",
+                "selectors_to_match1", 
+                "percent_women_filled",
+                "since_UNIVSFFRG",
+                "v2jupack_filled",
+                "v2cldiscw_filled",
+                "v2clprptyw_filled",
+                "v2csgender_filled",
+                "v2pepwrgen_filled",
+                "v2x_gender_filled",
+                "v2xcl_rol_filled",
+                "v2clacjstw_filled",
+                "v2cldmovew_filled",
+                "v2clslavef_filled",
+                "v2mefemjrn_filled",
+                "v2x_egaldem_filled",
+                "v2x_partipdem_filled")
+matched_sdm<-NULL
+all_sdm<-NULL
+balance<-as.data.frame(cbind(var_names, matched_sdm, all_sdm))
+
+
+for (i in 1:length(var_names)){
+  balance$matched_sdm[i]<- (((mean(na.omit(matched_pairs_tr1_full[matched_pairs_tr1_full$treated1==1, var_names[i]]))) 
+                             -
+                               (mean(na.omit(matched_pairs_tr1_full[matched_pairs_tr1_full$treated1==0 & matched_pairs_tr1_full$matched!=0, var_names[i]]))))
+                            /
+                              (sqrt(var(na.omit(matched_pairs_tr1_full[matched_pairs_tr1_full$matched!=0, var_names[i]])))))
+}
+
+for (i in 1:length(var_names)){
+  balance$all_sdm[i]<- (((mean(na.omit(highcourts[highcourts$treated1==1, var_names[i]]))) 
+                         -
+                           (mean(na.omit(highcourts[highcourts$treated1==0, var_names[i]]))))
+                        /
+                          (sqrt(var(na.omit(highcourts[, var_names[i]])))))
+}
+
+
+balance_variables<-c("Year", 
+                     "Number of Nominators", 
+                     "Number of Selectors",
+                     "Percent Women in Parliament", 
+                     "Years since Univ. Suffrage", 
+                     "Court Packing Index", 
+                     "Freedom of Discussion for Women", 
+                     "Property Rights for Women", 
+                     "Women's Civil Soc. Participation", 
+                     "Power Distributed by Gender",
+                     "Women Political Empowerment", 
+                     "Equality Before the Law", 
+                     "Access to Justice for Women", 
+                     "Freedom Domestic Mvmt for Women", 
+                     "Freedom from Forced Labor for Women", 
+                     "Female Journalists", 
+                     "Egalitarian Democracy Index",
+                     "Participatory  Democracy Index" 
+)
+
+
+
+#PLOT #
+#pdf("Balance_Plot_Tretment_as_Increase_jan2021.pdf", height=5, width=10 ) 
+par(mfrow=c(1,1), mar=c(5, 18, 5, 5), family="serif")
+y.axis <- c(length(balance$matched_sdm):1)
+plot(balance$matched_sdm, y.axis,
+     type = "p",
+     axes = FALSE,
+     xlab = "",
+     ylab = "",
+     pch = 20,
+     cex = 1.2,
+     xlim = c(-1,1),
+     main = "Standardized Difference in Means",
+     sub="Difference between Treated and Untreated Means"
+)
+
+segments(0, 0, x1=0, y1=19, lty = 2, lwd = 2, col = "grey")
+axis(2, at = y.axis, label = balance_variables, las = 1, tick = T, mgp = c(2,.6,0), cex.axis = 1)
+axis(1, mgp = c(0,.6,.75))
+points(balance$all_sdm, y.axis, pch=1, cex=1)
+legend(x= .2, y=18, c("Matched Data", "All Data"), pch=c(20, 1), cex=.8,  pt.cex=.8, bty = "n")
+mtext("Balance, Treatment as Increase")
+#dev.off()
+
+# Take a look at the paper-- did we effectively reproduce this table?
+
+```
+
+Did propensity score give us better balance than Euclidean distance matching? Why should it in this example?
+
+# IPW Estimator
+
+Now, if you got this far,  manually calculate the difference in means with IPW...
+
+This requires two steps:
+1. 
+2. 
+
+```{r}
+
+# Use only matched data
+
+# Calculate weights
+
+# Divide each unit’s weight by the sum of all weights in that group to normalize weights- why do we do this?
+
+# Weighted means 
+
+# Estimate difference in means                            
+
+# Print                             
+
+
+#Is this an estimate for the ATE or ATT????
+```
+
+# If you got this far...        
+
+Repeat with all observations
+
+```{r}
+# Calculate weights
+
+# Divide each unit’s weight by the sum of all weights in that group
+
+# Weighted means  
+
+
+# Estimate DIM
+
+```
+
+How could we deal with this issue? (Hint: check out Lec. 5 slide 20)...

@@ -9,5 +9,5 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This where I will store our section materials each week. All you have to do is
+This is where I will store our section materials each week. All you have to do is
 click on the link for the .RMD for each section.
